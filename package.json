@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "swiftpay-v2",
   "private": true,
   "scripts": {
     "build": "turbo run build",
