@@ -1,13 +1,12 @@
-import { Button } from "@repo/ui/button";
-import React from "react";
+"use client"
+import { signIn, signOut, useSession } from "next-auth/react";
+import { Appbar } from "@repo/ui/appbar";
 
-const Home = () => {
+export default function Page(): JSX.Element {
+  const session = useSession();
   return (
-    <>
-      <div>Home</div>
-      <Button />
-    </>
+   <div>
+      <Appbar onSignin={signIn} onSignout={signOut} user={session.data?.user} />
+   </div>
   );
-};
-
-export default Home;
+}
