@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AXIS Transaction Page</title>
+    <style>
+      html,
+      body {
+        height: 100vh;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        background-color: #f3f4f6;
+        box-sizing: border-box;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        min-height: 100vh;
+        margin: 0;
+      }
+      header,
+      footer {
+        background-color: #7a003c;
+        color: white;
+        padding: 1rem;
+        flex-shrink: 0;
+      }
+      .container {
+        max-width: 960px;
+        margin: auto;
+      }
+      nav ul {
+        display: flex;
+        list-style: none;
+        gap: 1rem;
+        padding: 0;
+        margin: 0;
+      }
+      main {
+        flex: 1 0 auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        min-height: 0;
+      }
+      .card {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        box-sizing: border-box;
+      }
+      .spinner {
+        border: 4px solid #f3f4f6;
+        border-top: 4px solid #7a003c;
+        border-radius: 50%;
+        width: 64px;
+        height: 64px;
+        animation: spin 1s linear infinite;
+        margin: auto;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .success,
+      .error {
+        font-size: 2rem;
+        margin: 1rem 0;
+      }
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div
+        class="container"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <img src="./axis_logo.png" alt="AXIS Bank" width="180" height="150" />
+        <nav>
+          <ul>
+            <li>Home</li>
+            <li>Balance</li>
+            <li>Payments</li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="card" id="transaction-card">
+        <h1 style="color: #7a003c">Transaction Processing</h1>
+        <div id="initial-state">
+          <p
+            id="amount-to-pay"
+            style="font-size: 1.2rem; margin-bottom: 1.5rem"
+          ></p>
+          <div>
+            <button
+              id="approve-btn"
+              style="
+                background-color: #28a745;
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 4px;
+                margin-right: 1rem;
+                font-size: 1rem;
+                cursor: pointer;
+              "
+            >
+              Approve Transaction
+            </button>
+            <button
+              id="cancel-btn"
+              style="
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                border-radius: 4px;
+                font-size: 1rem;
+                cursor: pointer;
+              "
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+
+        <div id="loading-state" style="display: none">
+          <div class="spinner"></div>
+          <p style="color: #7a003c; font-weight: bold">
+            Processing your transaction...
+          </p>
+          <p style="color: gray">Please do not refresh or close this page.</p>
+        </div>
+
+        <div id="success-state" style="display: none">
+          <div class="success">✓</div>
+          <h2 class="success">Transaction Successful!</h2>
+          <p id="success-message"></p>
+          <p style="color: gray">Transaction ID: <span id="txn-id"></span></p>
+        </div>
+
+        <div id="error-state" style="display: none">
+          <div class="error">✕</div>
+          <h2 class="error">Transaction Failed</h2>
+          <p id="error-message"></p>
+          <p style="color: gray">
+            Please try again or contact customer support.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container" style="text-align: center">
+        © 2023 AXIS Bank Ltd. All rights reserved. | Terms and Conditions |
+        Privacy Policy
+      </div>
+    </footer>
+
+    <script>
+      function simulateTransaction(amount) {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            if (Math.random() > 0.2) resolve();
+            else reject();
+          }, 2000);
+        });
+      }
+
+      function onApproveClick(amount) {
+        document.getElementById("initial-state").style.display = "none";
+        document.getElementById("loading-state").style.display = "block";
+
+        simulateTransaction(amount * 100)
+          .then(() => {
+            document.getElementById("loading-state").style.display = "none";
+            document.getElementById("success-state").style.display = "block";
+            document.getElementById("success-message").innerText =
+              "Transaction completed successfully.";
+            document.getElementById("txn-id").innerText =
+              "AXIS" +
+              Math.random().toString(36).substring(2, 11).toUpperCase();
+          })
+          .catch(() => {
+            document.getElementById("loading-state").style.display = "none";
+            document.getElementById("error-state").style.display = "block";
+            document.getElementById("error-message").innerText =
+              "Transaction failed. Please try again.";
+          });
+      }
+
+      function onCancelClick() {
+        alert("Transaction was cancelled.");
+      }
+
+      window.onload = function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = parseFloat(urlParams.get("amount"));
+        const amountToPay = document.getElementById("amount-to-pay");
+        const initialState = document.getElementById("initial-state");
+        const error = document.getElementById("error-state");
+        const errorMsg = document.getElementById("error-message");
+
+        if (isNaN(amount) || amount < 1 || amount > 10000) {
+          initialState.style.display = "none";
+          error.style.display = "block";
+          errorMsg.innerText =
+            "Transaction amount should be between 1 and 10000.";
+          return;
+        }
+
+        amountToPay.innerText = `Amount to pay: ₹${amount.toFixed(2)}`;
+
+        document.getElementById("approve-btn").onclick = function () {
+          onApproveClick(amount);
+        };
+        document.getElementById("cancel-btn").onclick = onCancelClick;
+      };
+    </script>
+  </body>
+</html>
