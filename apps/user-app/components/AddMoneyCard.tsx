@@ -17,6 +17,30 @@ const SUPPORTED_BANKS = [
   },
 ];
 
+const callBank = (
+  provider: string,
+  token: string | undefined,
+  amount: number
+) => {
+  if (provider === "HDFC Bank") {
+    if (typeof window !== "undefined") {
+      window.open(
+        `http://localhost:3005/hdfc?amount=${amount}&token=${token}`,
+        "_blank"
+      );
+    }
+  }
+
+  if (provider === "Axis Bank") {
+    if (typeof window !== "undefined") {
+      window.open(
+        `http://localhost:3005/axis?amount=${amount}&token=${token}`,
+        "_blank"
+      );
+    }
+  }
+};
+
 export const AddMoney = () => {
   const [redirectUrl, setRedirectUrl] = useState(
     SUPPORTED_BANKS[0]?.redirectUrl
@@ -51,8 +75,11 @@ export const AddMoney = () => {
         <div className="flex justify-center pt-4">
           <Button
             onClick={async () => {
-              await createOnRampTransaction(provider, value);
-              window.location.href = redirectUrl || "";
+              const { message, token } = await createOnRampTransaction(
+                provider,
+                value
+              );
+              callBank(provider, token, value);
             }}
           >
             Add Money

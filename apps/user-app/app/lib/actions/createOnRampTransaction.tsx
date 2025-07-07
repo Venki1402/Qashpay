@@ -29,5 +29,6 @@ export async function createOnRampTransaction(
 
   return {
     message: "Done",
+    token,
   };
 }
