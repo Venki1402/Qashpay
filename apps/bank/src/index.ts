@@ -8,7 +8,7 @@ app.use("/web-pages", express.static(path.join(__dirname, "web-pages")));
 
 app.get("/hdfc", (req, res) => {
   // Try to open the page in a new browser window (not just a tab)
-  const fileUrl = `http://localhost:3005/web-pages/hdfc.html?amount=${req.query.amount}`;
+  const fileUrl = `http://localhost:3005/web-pages/hdfc.html?amount=${req.query.amount}&token=${req.query.token}&userId=${req.query.userId}`;
   res.send(`
     <html>
       <head>
@@ -37,7 +37,7 @@ app.get("/hdfc", (req, res) => {
 
 app.get("/axis", (req, res) => {
   // Try to open the page in a new browser window (not just a tab)
-  const fileUrl = `http://localhost:3005/web-pages/axis.html?amount=${req.query.amount}`;
+  const fileUrl = `http://localhost:3005/web-pages/axis.html?amount=${req.query.amount}&token=${req.query.token}&userId=${req.query.userId}`;
   res.send(`
       <html>
         <head>

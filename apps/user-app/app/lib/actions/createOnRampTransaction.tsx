@@ -30,5 +30,6 @@ export async function createOnRampTransaction(
   return {
     message: "Done",
     token,
+    userId: Number(session?.user?.id),
   };
 }

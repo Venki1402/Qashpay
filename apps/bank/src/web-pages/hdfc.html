@@ -180,56 +180,73 @@
     </footer>
 
     <script>
-      // Simulated async transaction logic
-      function simulateTransaction(amount) {
-        return new Promise((resolve, reject) => {
-          setTimeout(() => {
-            if (Math.random() > 0.2) resolve();
-            else reject();
-          }, 2000);
-        });
-      }
+      let pageOpenedAt = Date.now();
 
-      // Callback functions for buttons
-      function onApproveClick(amount) {
-        // Hide initial state, show loading
+      function onApproveClick(amount, token, userId) {
         document.getElementById("initial-state").style.display = "none";
         document.getElementById("loading-state").style.display = "block";
 
-        // Start transaction simulation
-        simulateTransaction(amount * 100)
-          .then(() => {
-            document.getElementById("loading-state").style.display = "none";
-            document.getElementById("success-state").style.display = "block";
-            document.getElementById("success-message").innerText =
-              "Transaction completed successfully.";
-            document.getElementById("txn-id").innerText =
-              "HDFC" +
-              Math.random().toString(36).substring(2, 11).toUpperCase();
-          })
-          .catch(() => {
+        // Check if more than 5 minutes (300000 ms) have passed since page load
+        const now = Date.now();
+        if (now - pageOpenedAt > 5 * 60 * 1000) {
+          // More than 5 minutes, reject transaction
+          setTimeout(() => {
             document.getElementById("loading-state").style.display = "none";
             document.getElementById("error-state").style.display = "block";
             document.getElementById("error-message").innerText =
-              "Transaction failed. Please try again.";
-          });
+              "Transaction failed. Session expired (more than 5 minutes). Please try again.";
+          }, 1000);
+          return;
+        }
+
+        // Otherwise, transaction is successful
+        setTimeout(() => {
+          // Call the webhook
+          fetch("http://localhost:3003/hdfcWebhook", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              user_identifier: userId,
+              token: token,
+              amount: amount * 100,
+            }),
+          })
+            .then((res) => res.json())
+            .then(() => {
+              document.getElementById("loading-state").style.display = "none";
+              document.getElementById("success-state").style.display = "block";
+              document.getElementById("success-message").innerText =
+                "Transaction completed successfully.";
+              document.getElementById("txn-id").innerText =
+                "AXIS" +
+                Math.random().toString(36).substring(2, 11).toUpperCase();
+            })
+            .catch(() => {
+              document.getElementById("loading-state").style.display = "none";
+              document.getElementById("error-state").style.display = "block";
+              document.getElementById("error-message").innerText =
+                "Transaction failed. Please try again.";
+            });
+        }, 2000);
       }
 
       function onCancelClick() {
-        // TODO: Add your cancel logic here (e.g., redirect, show a message, etc.)
-        alert("Cancel clicked");
+        alert("Transaction was cancelled.");
       }
 
       window.onload = function () {
+        pageOpenedAt = Date.now();
         const urlParams = new URLSearchParams(window.location.search);
         const amount = parseFloat(urlParams.get("amount"));
+        const token = urlParams.get("token");
+        const userId = urlParams.get("userId");
         const amountToPay = document.getElementById("amount-to-pay");
         const initialState = document.getElementById("initial-state");
-        const loading = document.getElementById("loading-state");
         const error = document.getElementById("error-state");
         const errorMsg = document.getElementById("error-message");
 
-        // Validate amount
         if (isNaN(amount) || amount < 1 || amount > 10000) {
           initialState.style.display = "none";
           error.style.display = "block";
@@ -238,12 +255,18 @@
           return;
         }
 
-        // Show amount to pay
+        if (!token || !userId) {
+          initialState.style.display = "none";
+          error.style.display = "block";
+          errorMsg.innerText =
+            "Missing required transaction information (token or userId).";
+          return;
+        }
+
         amountToPay.innerText = `Amount to pay: ₹${amount.toFixed(2)}`;
 
-        // Attach button event listeners
         document.getElementById("approve-btn").onclick = function () {
-          onApproveClick(amount);
+          onApproveClick(amount, token, userId);
         };
         document.getElementById("cancel-btn").onclick = onCancelClick;
       };

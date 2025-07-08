@@ -20,12 +20,13 @@ const SUPPORTED_BANKS = [
 const callBank = (
   provider: string,
   token: string | undefined,
-  amount: number
+  amount: number,
+  userId: number | undefined
 ) => {
   if (provider === "HDFC Bank") {
     if (typeof window !== "undefined") {
       window.open(
-        `http://localhost:3005/hdfc?amount=${amount}&token=${token}`,
+        `http://localhost:3005/hdfc?amount=${amount}&token=${token}&userId=${userId}`,
         "_blank"
       );
     }
@@ -34,7 +35,7 @@ const callBank = (
   if (provider === "Axis Bank") {
     if (typeof window !== "undefined") {
       window.open(
-        `http://localhost:3005/axis?amount=${amount}&token=${token}`,
+        `http://localhost:3005/axis?amount=${amount}&token=${token}&userId=${userId}`,
         "_blank"
       );
     }
@@ -75,11 +76,11 @@ export const AddMoney = () => {
         <div className="flex justify-center pt-4">
           <Button
             onClick={async () => {
-              const { message, token } = await createOnRampTransaction(
+              const { message, token, userId } = await createOnRampTransaction(
                 provider,
                 value
               );
-              callBank(provider, token, value);
+              callBank(provider, token, value, userId);
             }}
           >
             Add Money

@@ -203,13 +203,13 @@
         // Otherwise, transaction is successful
         setTimeout(() => {
           // Call the webhook
-          fetch("http://localhost:3002/axisWebhook", {
+          fetch("http://localhost:3003/axisWebhook", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              userId: userId,
+              user_identifier: userId,
               token: token,
               amount: amount * 100,
             }),
