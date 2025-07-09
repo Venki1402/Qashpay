@@ -30,12 +30,6 @@ export default async function () {
         <div>
           <P2PTransactions transactions={transactions} />
         </div>
-        {/* <div>
-          <BalanceCard amount={balance.amount} locked={balance.locked} />
-          <div className="pt-4">
-            <OnRampTransactions transactions={transactions} />
-          </div>
-        </div> */}
       </div>
     </div>
   );
