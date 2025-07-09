@@ -2,6 +2,9 @@
 
 A payment wallet application where you can transfer money from your bank into your wallet and make seamless P2P transactions with users.
 
+# Demo
+https://github.com/user-attachments/assets/d2efbc6f-03dd-4c22-b5ae-66f5b9a62e84
+
 ## Features
 
 - User wallet with balance management
