@@ -1,42 +1,39 @@
 import { Card } from "@repo/ui/card";
 
-export const OnRampTransactions = ({
+export const P2PTransactions = ({
   transactions,
 }: {
   transactions: {
     time: Date;
     amount: number;
-    // TODO: Can the type of `status` be more specific?
-    status: string;
-    provider: string;
+    type: string;
   }[];
 }) => {
   if (!transactions.length) {
     return (
-      <Card title="Recent Bank Transactions">
+      <Card title="Recent P2P Transactions">
         <div className="text-center pb-8 pt-8">No Recent transactions</div>
       </Card>
     );
   }
   return (
-    <Card title="Recent Bank Transactions">
+    <Card title="Recent P2P Transactions">
       <div className="pt-2">
         {transactions.map((t) => {
-          let statusColor = "text-gray-500";
-          if (t.status === "Success") statusColor = "text-green-600";
-          else if (t.status === "Processing") statusColor = "text-blue-600";
-          else if (t.status === "Failure") statusColor = "text-red-600";
-
+          let statusColor =
+            t.type === "sent" ? "text-red-600" : "text-green-600";
           return (
             <div className={`flex justify-between ${statusColor}`}>
               <div>
-                <div className="text-sm">Received INR</div>
+                <div className="text-sm">
+                  {t.type === "sent" ? "Sent INR" : "Received INR"}
+                </div>
                 <div className="text-slate-600 text-xs">
                   {t.time.toDateString()}
                 </div>
               </div>
               <div className="flex flex-col justify-center">
-                + Rs {t.amount / 100}
+                {t.type === "sent" ? "-" : "+"} Rs {t.amount / 100}
               </div>
             </div>
           );
